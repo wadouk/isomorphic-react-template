@@ -9,15 +9,29 @@ var NotFound      = require('./NotFound.jsx');
 
 function findPlace(id) {
   for (var i = 0; i < places.length; i++) {
-    if (places[i].id === id) return places[i];   
+    if (places[i].id === id) return places[i];
   }
 }
 
 var Place = React.createClass({
-  mixins: [ Router.State ],
+  statics: {
+    willTransitionTo: function (transition, params) {
+      if (params.id) {
+        transition.redirect("/q/place-" + params.id);
+      }
+    }
+  },
+
+  findId: function findId() {
+    if (this.getParams().id) {
+      return this.getParams().id;
+    } else {
+      return this.getPath().split('-')[1];
+    }
+  },
 
   render: function () {
-    var place = findPlace(this.getParams().id);
+    var place = findPlace(this.findId());
 
     if (!place) return <NotFound />;
 
